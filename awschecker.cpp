@@ -1,8 +1,17 @@
-// AWS checker 
+////////////////////////////////////////////////////////
+// AWS checker Ver 1
+// 
+//
+// Run:
+//       ./awschecker <host> <port> <interval> <out file>
+// 
+//
+/////////////////////////////////////////////////////////
 
 #include <unistd.h> 
 #include <stdio.h> 
 #include <iostream>
+#include <fstream>
 #include <sys/socket.h> 
 #include <stdlib.h> 
 #include <string.h> 
@@ -10,6 +19,8 @@
 #include <netdb.h>
 #include <chrono>
 #include <ctime> 
+using namespace std::chrono;
+using namespace std;
 
 void dns_to_ip(char* dns_in, char* ip_out);
 
@@ -29,21 +40,31 @@ void dns_to_ip(char* dns_in, char* ip_out){
 
 int main(int argc, char **argv)
 {
-    if (argc < 2) {
+    if (argc < 5) {
         printf("Usage: %s hostname port timeout out_file", argv[0]);
         exit(-1);
     }
+    system_clock::time_point start;
+    system_clock::time_point end;
+    time_t start_time;
+    time_t end_time;
+    duration<double> duration_seconds;
+
+    start = system_clock::now();
+    start_time = system_clock::to_time_t(start);
+
+    ofstream out_file;
+    out_file.open(argv[4]);
+    out_file << "Started echo ping to " << argv[1] << " at " <<  ctime(&start_time) << endl;
+
 
 
   	char ip_out[INET_ADDRSTRLEN] = {0};
   	dns_to_ip(argv[1], ip_out);
 
-printf("%s >>>> !!!22\n", ip_out);
-
 	struct sockaddr_in serv_addr;
-
 	char *request = "HelloMy \n";
-	char reply[1024] = {0};
+	char reply[16] = {0};
 
 	int sock = 0;
 
@@ -71,24 +92,28 @@ printf("%s >>>> !!!22\n", ip_out);
         return -1; 
     } 
 
-    auto start = std::chrono::system_clock::now();
+    while(1){
+
+ 	
+
+    start = system_clock::now();
+    start_time = system_clock::to_time_t(start);
 
     send(sock, request, strlen(request), 0); 
-    printf("Hello message sent\n"); 
+    out_file << "Request message sent, size = " << strlen(request) << " at " <<  ctime(&start_time);
+    out_file.flush();
+    printf("Request message sent\n"); 
 
     read(sock, reply, strlen(request)); 
-    printf("%s\n", reply); 
+    end = system_clock::now();
+    duration_seconds = end-start;
+    out_file << "Reply received, duration time: " << duration_seconds.count() << "s\n\n";
+    out_file.flush();
+    sleep(atoi(argv[3]));
 
-    auto end = std::chrono::system_clock::now();
- 
-    std::chrono::duration<double> elapsed_seconds = end-start;
-    std::time_t end_time = std::chrono::system_clock::to_time_t(end);
- 
-    std::cout << "finished computation at " << std::ctime(&end_time)
-              << "elapsed time: " << elapsed_seconds.count() << "s\n";
-                
+    }       
 
+    out_file.close();
+    return 0;
 
-
-  return 0;
 }
