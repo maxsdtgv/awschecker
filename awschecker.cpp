@@ -41,13 +41,13 @@ void dns_to_ip(char* dns_in, char* ip_out){
 int main(int argc, char **argv)
 {
     if (argc < 5) {
-        printf("Usage: %s hostname port timeout out_file", argv[0]);
+        printf("Usage: %s <host> <port> <interval_seconds> <out_file>\n", argv[0]);
         exit(-1);
     }
     system_clock::time_point start;
     system_clock::time_point end;
     time_t start_time;
-    time_t end_time;
+    //time_t end_time;
     duration<double> duration_seconds;
 
     start = system_clock::now();
@@ -63,7 +63,7 @@ int main(int argc, char **argv)
   	dns_to_ip(argv[1], ip_out);
 
 	struct sockaddr_in serv_addr;
-	char *request = "HelloMy \n";
+	char const *request = "HelloMy \n";
 	char reply[16] = {0};
 
 	int sock = 0;
@@ -91,29 +91,29 @@ int main(int argc, char **argv)
         printf("\n Connection Failed \n"); 
         return -1; 
     } 
-
+    int i = 0;
     while(1){
+	    i++;
+	    
+	    start = system_clock::now();
+	    start_time = system_clock::to_time_t(start);
 
- 	
+	    send(sock, request, strlen(request), 0); 
+	    out_file << "seq = " << i <<", Request message sent, size = " << strlen(request) << " at " <<  ctime(&start_time);
+	    out_file.flush();
+	    printf("seq = %i, Request message sent, size = %zu , at %s ", i, strlen(request), ctime(&start_time)); 
 
-    start = system_clock::now();
-    start_time = system_clock::to_time_t(start);
+	    read(sock, reply, strlen(request)); 
+	    end = system_clock::now();
+	    duration_seconds = end-start;
+	    out_file << "seq = " << i <<", Reply received, duration time: " << duration_seconds.count() << "s\n\n";
+	    out_file.flush();
+	    printf("seq = %i, Reply received, duration time: %lf \n\n", i, duration_seconds.count());
 
-    send(sock, request, strlen(request), 0); 
-    out_file << "Request message sent, size = " << strlen(request) << " at " <<  ctime(&start_time);
-    out_file.flush();
-    printf("Request message sent\n"); 
-
-    read(sock, reply, strlen(request)); 
-    end = system_clock::now();
-    duration_seconds = end-start;
-    out_file << "Reply received, duration time: " << duration_seconds.count() << "s\n\n";
-    out_file.flush();
-    sleep(atoi(argv[3]));
+	    sleep(atoi(argv[3]));
 
     }       
 
     out_file.close();
     return 0;
-
 }
