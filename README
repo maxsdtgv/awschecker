@@ -1,5 +1,13 @@
 Steps to compile and run:
 -------------------------
-
+compile:
+--------
 make
-./awschecker
+
+help:
+-----
+./awschecker <host> <port> <interval_seconds> <out_file>
+
+example:
+-----
+./awschecker ec2-18-224-1-205.us-east-2.compute.amazonaws.com 50100 2 time.txt

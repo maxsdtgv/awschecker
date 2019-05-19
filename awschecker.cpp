@@ -3,7 +3,7 @@
 // 
 //
 // Run:
-//       ./awschecker <host> <port> <interval> <out file>
+//       ./awschecker <host> <port> <interval_seconds> <out_file>
 // 
 //
 /////////////////////////////////////////////////////////
