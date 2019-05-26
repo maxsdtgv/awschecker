@@ -19,12 +19,8 @@
 #include <netdb.h>
 #include <chrono>
 #include <ctime> 
-using namespace std::chrono;
-using namespace std;
 
-void dns_to_ip(char* dns_in, char* ip_out);
-
-void dns_to_ip(char* dns_in, char* ip_out){
+static void dns_to_ip(char* dns_in, char* ip_out){
     struct hostent *hp = gethostbyname(dns_in);
     if (hp == NULL) {
        printf("gethostbyname() failed\n");
@@ -44,18 +40,18 @@ int main(int argc, char **argv)
         printf("Usage: %s <host> <port> <interval_seconds> <out_file>\n", argv[0]);
         exit(-1);
     }
-    system_clock::time_point start;
-    system_clock::time_point end;
+    std::chrono::system_clock::time_point start;
+    std::chrono::system_clock::time_point end;
     time_t start_time;
     //time_t end_time;
-    duration<double> duration_seconds;
+    std::chrono::duration<double> duration_seconds;
 
-    start = system_clock::now();
-    start_time = system_clock::to_time_t(start);
+    start = std::chrono::system_clock::now();
+    start_time = std::chrono::system_clock::to_time_t(start);
 
-    ofstream out_file;
+    std::ofstream out_file;
     out_file.open(argv[4]);
-    out_file << "Started echo ping to " << argv[1] << " at " <<  ctime(&start_time) << endl;
+    out_file << "Started echo ping to " << argv[1] << " at " <<  std::ctime(&start_time) << std::endl;
 
 
 
@@ -95,8 +91,8 @@ int main(int argc, char **argv)
     while(1){
 	    i++;
 	    
-	    start = system_clock::now();
-	    start_time = system_clock::to_time_t(start);
+	    start = std::chrono::system_clock::now();
+	    start_time = std::chrono::system_clock::to_time_t(start);
 
 	    send(sock, request, strlen(request), 0); 
 	    out_file << "seq = " << i <<", Request message sent, size = " << strlen(request) << " at " <<  ctime(&start_time);
@@ -104,7 +100,7 @@ int main(int argc, char **argv)
 	    printf("seq = %i, Request message sent, size = %zu , at %s ", i, strlen(request), ctime(&start_time)); 
 
 	    read(sock, reply, strlen(request)); 
-	    end = system_clock::now();
+	    end = std::chrono::system_clock::now();
 	    duration_seconds = end-start;
 	    out_file << "seq = " << i <<", Reply received, duration time: " << duration_seconds.count() << "s\n\n";
 	    out_file.flush();
