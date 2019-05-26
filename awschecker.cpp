@@ -21,47 +21,48 @@
 #include <ctime> 
 
 static void dns_to_ip(char* dns_in, char* ip_out){
-    struct hostent *hp = gethostbyname(dns_in);
-    if (hp == NULL) {
-       printf("gethostbyname() failed\n");
-    } else {
-       printf("%s = ", hp->h_name);
-       inet_ntop(AF_INET, hp -> h_addr_list[0], ip_out, INET_ADDRSTRLEN);            
-       printf( "%s \n", ip_out);
-    }	
+	struct hostent *hp = gethostbyname(dns_in);
+	if (hp == NULL) {
+		printf("gethostbyname() failed\n");
+		} 
+		else {
+			printf("%s = ", hp->h_name);
+			inet_ntop(AF_INET, hp -> h_addr_list[0], ip_out, INET_ADDRSTRLEN);            
+			printf( "%s \n", ip_out);
+			}	
 	return;
-}
+	}
 
 int main(int argc, char **argv)
 {
-    if (argc < 6) {
-        printf("Usage: %s <host> <port> <proto> <interval_seconds> <out_file>\n", argv[0]);
-        exit(-1);
-    }
+	if (argc < 6) {
+		printf("Usage: %s <host> <port> <proto> <interval_seconds> <out_file>\n", argv[0]);
+		exit(-1);
+		}
 
-    std::string host_name = argv[1];
-    int host_port = atoi(argv[2]);
-    std::string host_proto = argv[3];
-    int request_interval = atoi(argv[4]);
-    std::string log_file = argv[5];
+	std::string host_name = argv[1];
+	int host_port = atoi(argv[2]);
+	std::string host_proto = argv[3];
+	int request_interval = atoi(argv[4]);
+	std::string log_file = argv[5];
 
-    std::chrono::system_clock::time_point start;
-    std::chrono::system_clock::time_point end;
-    time_t start_time;
-    //time_t end_time;
-    std::chrono::duration<double> duration_seconds;
+	std::chrono::system_clock::time_point start;
+	std::chrono::system_clock::time_point end;
+	time_t start_time;
+	//time_t end_time;
+	std::chrono::duration<double> duration_seconds;
 
-    start = std::chrono::system_clock::now();
-    start_time = std::chrono::system_clock::to_time_t(start);
+	start = std::chrono::system_clock::now();
+	start_time = std::chrono::system_clock::to_time_t(start);
 
-    std::ofstream out_file;
-    out_file.open(log_file);
-    out_file << "Started echo ping to " << host_name << " at " <<  std::ctime(&start_time) << std::endl;
+	std::ofstream out_file;
+	out_file.open(log_file);
+	out_file << "Started echo ping to " << host_name << " at " <<  std::ctime(&start_time) << std::endl;
 
-  	char ip_out[INET_ADDRSTRLEN] = {0};
-  	char ch_host_name[host_name.size()+1];
-  	strcpy(ch_host_name, host_name.c_str());
-  	dns_to_ip(ch_host_name, ip_out);
+	char ip_out[INET_ADDRSTRLEN] = {0};
+	char ch_host_name[host_name.size()+1];
+	strcpy(ch_host_name, host_name.c_str());
+	dns_to_ip(ch_host_name, ip_out);
 
 	struct sockaddr_in serv_addr;
 	char const *request = "HelloMy\n";
@@ -78,65 +79,62 @@ int main(int argc, char **argv)
 	serv_addr.sin_family = AF_INET; 
     serv_addr.sin_port = htons(host_port); 
 
-    if (host_proto == "tcp"){
-	    	sock = socket(AF_INET, SOCK_STREAM, 0);
-	    }
-	    else if(host_proto == "udp"){
-	    	sock = socket(AF_INET, SOCK_DGRAM, 0);
-	    }
-    if (sock < 0) 
-	    { 
-	        printf("\n Socket creation error \n"); 
-	        return -1; 
-	    } 
-
-    // Convert IP from text to binary form 
-    if(inet_pton(AF_INET, ip_out, &serv_addr.sin_addr)<=0)  
-    { 
-        printf("\nInvalid address/ Address not supported \n"); 
-        return -1; 
-    } 
-    setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof tv);
-
-   if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) 
-    { 
-        printf("\n Connection Failed \n"); 
-        return -1; 
-    } 
-
-
-    int i = 0;
-    while(1){
-	    i++;
-	    
-	    start = std::chrono::system_clock::now();
-	    start_time = std::chrono::system_clock::to_time_t(start);
-
-	    send(sock, request, strlen(request), 0); 
-	    out_file << "seq = " << i <<", " << host_proto<<" request size = " << strlen(request) << " at " <<  ctime(&start_time);
-	    out_file.flush();
-	    printf("seq = %i, %s request size = %zu at %s ", i, host_proto.c_str(), strlen(request), ctime(&start_time)); 
-
-        memset(reply, 0, sizeof reply);
-	    read(sock, reply, strlen(request)); 
-	    if (strcmp(request, reply) == 0){
-
-		    end = std::chrono::system_clock::now();
-		    duration_seconds = end-start;
-		    out_file << "seq = " << i <<", reply duration time: " << duration_seconds.count() << "s\n\n";
-		    out_file.flush();
-		    printf("seq = %i, reply duration time: %lfs \n\n", i, duration_seconds.count());
-		    }
-		else{
-			out_file << "seq = " << i <<",            WARNING!!! server did not respond in: " << tv.tv_sec << "s WARNING!!! WARNING!!!\n\n";
-			printf("seq = %i,            WARNING!!! server did not respond in: %zus WARNING!!! WARNING!!!\n\n", i, tv.tv_sec);
-
+	if (host_proto == "tcp"){
+		sock = socket(AF_INET, SOCK_STREAM, 0);
 		}
+		else if(host_proto == "udp"){
+			sock = socket(AF_INET, SOCK_DGRAM, 0);
+			}
+	if (sock < 0){ 
+		printf("\n Socket creation error \n"); 
+		return -1; 
+		} 
 
-	    sleep(request_interval);
+	// Convert IP from text to binary form 
+	if(inet_pton(AF_INET, ip_out, &serv_addr.sin_addr)<=0){ 
+		printf("\nInvalid address/ Address not supported \n"); 
+		return -1; 
+		} 
+	setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof tv);
 
-    }       
+	if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0){ 
+		printf("\n Connection Failed \n"); 
+		return -1; 
+		} 
 
-    out_file.close();
-    return 0;
+
+	int i = 0;
+	while(1){
+		i++;
+
+		start = std::chrono::system_clock::now();
+		start_time = std::chrono::system_clock::to_time_t(start);
+
+		send(sock, request, strlen(request), 0); 
+		out_file << "seq = " << i <<", " << host_proto<<" request size = " << strlen(request) << " at " <<  ctime(&start_time);
+		out_file.flush();
+		printf("seq = %i, %s request size = %zu at %s ", i, host_proto.c_str(), strlen(request), ctime(&start_time)); 
+
+		memset(reply, 0, sizeof reply);			// Will empty "reply" var
+		read(sock, reply, strlen(request));		// Read from the sock routine
+
+		end = std::chrono::system_clock::now();
+		duration_seconds = end-start;
+
+		if (strcmp(request, reply) == 0){		// Compare request and received reply
+			out_file << "seq = " << i <<", reply duration time: " << duration_seconds.count() << "s\n\n";
+			out_file.flush();
+			printf("seq = %i, reply duration time: %lfs \n\n", i, duration_seconds.count());
+			}
+			else{
+				out_file << "seq = " << i <<", WARNING!!! different content in request and reply, or server did not respond in: " << tv.tv_sec << "s WARNING!!! WARNING!!!\n\n";
+				printf("seq = %i, WARNING!!! different content in request and reply, or server did not respond in: %zus WARNING!!! WARNING!!!\n\n", i, tv.tv_sec);
+
+				}
+
+		sleep(request_interval);
+		}       
+
+	out_file.close();
+	return 0;
 }
