@@ -1,13 +1,30 @@
-Steps to compile and run:
--------------------------
-compile:
+////////////////////////////////////////////////////////
+// AWS checker Ver 1
+// 
+////////////////////////////////////////////////////////
+
+
+
+All parameters in cli are mandatory to define!!!
+
+Run:
+----
+      ./awschecker <host> <port> <proto> <interval_seconds> <out_file>
+
+<host> - IP address or DNS name
+<port> - TCP/UDP remote server port
+<proto> - tcp - to use TCP connection
+          udp - to use UDP connection
+<interval_seconds> - interval between sending requests to remote server
+<out_file> - define file name to save the output logs
+
+Compile:
 --------
 make
 
-help:
------
-./awschecker <host> <port> <interval_seconds> <out_file>
-
-example:
------
-./awschecker ec2-18-224-1-205.us-east-2.compute.amazonaws.com 50100 2 time.txt
+Example and usefull commands:
+-----------------------------
+./awschecker ec2-18-224-1-205.us-east-2.compute.amazonaws.com 50100 udp 2 time.txt  <<< app run exemple
+ncat -lp 2000 -k -c 'xargs -n1 echo'                                            <<< run echo tcp server on port 2000
+ncat -lpu 2000 -k -c 'xargs -n1 echo'                                           <<< run echo udp server on port 2000
+sudo iptables -t filter -A INPUT -p udp -s 18.224.1.205 --sport 50100 -j DROP   <<< local input drop packets from the server

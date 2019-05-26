@@ -64,8 +64,12 @@ int main(int argc, char **argv)
   	dns_to_ip(ch_host_name, ip_out);
 
 	struct sockaddr_in serv_addr;
-	char const *request = "HelloMy \n";
+	char const *request = "HelloMy\n";
 	char reply[16] = {0};
+	//Read timeout defining
+	struct timeval tv;
+	tv.tv_sec = 20;
+	tv.tv_usec = 0;
 
 	int sock = 0;
 
@@ -92,12 +96,15 @@ int main(int argc, char **argv)
         printf("\nInvalid address/ Address not supported \n"); 
         return -1; 
     } 
+    setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof tv);
 
    if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) 
     { 
         printf("\n Connection Failed \n"); 
         return -1; 
     } 
+
+
     int i = 0;
     while(1){
 	    i++;
@@ -106,16 +113,25 @@ int main(int argc, char **argv)
 	    start_time = std::chrono::system_clock::to_time_t(start);
 
 	    send(sock, request, strlen(request), 0); 
-	    out_file << "seq = " << i <<", Request message sent, size = " << strlen(request) << " at " <<  ctime(&start_time);
+	    out_file << "seq = " << i <<", " << host_proto<<" request size = " << strlen(request) << " at " <<  ctime(&start_time);
 	    out_file.flush();
-	    printf("seq = %i, Request message sent, size = %zu , at %s ", i, strlen(request), ctime(&start_time)); 
+	    printf("seq = %i, %s request size = %zu at %s ", i, host_proto.c_str(), strlen(request), ctime(&start_time)); 
 
+        memset(reply, 0, sizeof reply);
 	    read(sock, reply, strlen(request)); 
-	    end = std::chrono::system_clock::now();
-	    duration_seconds = end-start;
-	    out_file << "seq = " << i <<", Reply received, duration time: " << duration_seconds.count() << "s\n\n";
-	    out_file.flush();
-	    printf("seq = %i, Reply received, duration time: %lf \n\n", i, duration_seconds.count());
+	    if (strcmp(request, reply) == 0){
+
+		    end = std::chrono::system_clock::now();
+		    duration_seconds = end-start;
+		    out_file << "seq = " << i <<", reply duration time: " << duration_seconds.count() << "s\n\n";
+		    out_file.flush();
+		    printf("seq = %i, reply duration time: %lfs \n\n", i, duration_seconds.count());
+		    }
+		else{
+			out_file << "seq = " << i <<",           WARNING!!! server did not respond in: " << tv.tv_sec << "s WARNING!!! WARNING!!!\n\n";
+			printf("seq = %i,           WARNING!!! server did not respond in: %zus WARNING!!! WARNING!!!\n\n", i, tv.tv_sec);
+
+		}
 
 	    sleep(request_interval);
 

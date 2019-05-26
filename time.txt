@@ -1,11 +1,50 @@
-Started echo ping to ec2-18-224-1-205.us-east-2.compute.amazonaws.com at Sun May 26 15:22:42 2019
+Started echo ping to ec2-18-224-1-205.us-east-2.compute.amazonaws.com at Sun May 26 17:07:29 2019
 
-seq = 1, Request message sent, size = 9 at Sun May 26 15:22:42 2019
-seq = 1, Reply received, duration time: 0.133787s
+seq = 1, udp request size = 8 at Sun May 26 17:07:29 2019
+seq = 1, reply duration time: 0.134872s
 
-seq = 2, Request message sent, size = 9 at Sun May 26 15:22:44 2019
-seq = 2, Reply received, duration time: 0.132351s
+seq = 2, udp request size = 8 at Sun May 26 17:07:31 2019
+seq = 2, reply duration time: 0.133305s
 
-seq = 3, Request message sent, size = 9 at Sun May 26 15:22:46 2019
-seq = 3, Reply received, duration time: 0.133067s
+seq = 3, udp request size = 8 at Sun May 26 17:07:33 2019
+seq = 3, reply duration time: 0.133225s
+
+seq = 4, udp request size = 8 at Sun May 26 17:07:35 2019
+seq = 4, reply duration time: 0.133166s
+
+seq = 5, udp request size = 8 at Sun May 26 17:07:37 2019
+seq = 5, reply duration time: 0.133095s
+
+seq = 6, udp request size = 8 at Sun May 26 17:07:39 2019
+seq = 6, reply duration time: 0.133231s
+
+seq = 7, udp request size = 8 at Sun May 26 17:07:41 2019
+seq = 7, reply duration time: 0.133205s
+
+seq = 8, udp request size = 8 at Sun May 26 17:07:44 2019
+seq = 8, reply duration time: 0.133174s
+
+seq = 9, udp request size = 8 at Sun May 26 17:07:46 2019
+seq = 9, reply duration time: 0.133169s
+
+seq = 10, udp request size = 8 at Sun May 26 17:07:48 2019
+seq = 10, reply duration time: 0.133229s
+
+seq = 11, udp request size = 8 at Sun May 26 17:07:50 2019
+seq = 11,           WARNING!!! server did not respond in: 10s WARNING!!! WARNING!!!
+
+seq = 12, udp request size = 8 at Sun May 26 17:08:02 2019
+seq = 12,           WARNING!!! server did not respond in: 10s WARNING!!! WARNING!!!
+
+seq = 13, udp request size = 8 at Sun May 26 17:08:14 2019
+seq = 13,           WARNING!!! server did not respond in: 10s WARNING!!! WARNING!!!
+
+seq = 14, udp request size = 8 at Sun May 26 17:08:26 2019
+seq = 14, reply duration time: 0.133296s
+
+seq = 15, udp request size = 8 at Sun May 26 17:08:28 2019
+seq = 15, reply duration time: 0.133219s
+
+seq = 16, udp request size = 8 at Sun May 26 17:08:30 2019
+seq = 16, reply duration time: 0.133234s
 
