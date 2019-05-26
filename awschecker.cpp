@@ -3,7 +3,7 @@
 // 
 //
 // Run:
-//       ./awschecker <host> <port> <interval_seconds> <out_file>
+//       ./awschecker <host> <port> <proto> <interval_seconds> <out_file>
 // 
 //
 /////////////////////////////////////////////////////////
@@ -26,9 +26,7 @@ static void dns_to_ip(char* dns_in, char* ip_out){
        printf("gethostbyname() failed\n");
     } else {
        printf("%s = ", hp->h_name);
-
        inet_ntop(AF_INET, hp -> h_addr_list[0], ip_out, INET_ADDRSTRLEN);            
-
        printf( "%s \n", ip_out);
     }	
 	return;
@@ -36,10 +34,17 @@ static void dns_to_ip(char* dns_in, char* ip_out){
 
 int main(int argc, char **argv)
 {
-    if (argc < 5) {
-        printf("Usage: %s <host> <port> <interval_seconds> <out_file>\n", argv[0]);
+    if (argc < 6) {
+        printf("Usage: %s <host> <port> <proto> <interval_seconds> <out_file>\n", argv[0]);
         exit(-1);
     }
+
+    std::string host_name = argv[1];
+    int host_port = atoi(argv[2]);
+    std::string host_proto = argv[3];
+    int request_interval = atoi(argv[4]);
+    std::string log_file = argv[5];
+
     std::chrono::system_clock::time_point start;
     std::chrono::system_clock::time_point end;
     time_t start_time;
@@ -50,13 +55,13 @@ int main(int argc, char **argv)
     start_time = std::chrono::system_clock::to_time_t(start);
 
     std::ofstream out_file;
-    out_file.open(argv[4]);
-    out_file << "Started echo ping to " << argv[1] << " at " <<  std::ctime(&start_time) << std::endl;
-
-
+    out_file.open(log_file);
+    out_file << "Started echo ping to " << host_name << " at " <<  std::ctime(&start_time) << std::endl;
 
   	char ip_out[INET_ADDRSTRLEN] = {0};
-  	dns_to_ip(argv[1], ip_out);
+  	char ch_host_name[host_name.size()+1];
+  	strcpy(ch_host_name, host_name.c_str());
+  	dns_to_ip(ch_host_name, ip_out);
 
 	struct sockaddr_in serv_addr;
 	char const *request = "HelloMy \n";
@@ -67,13 +72,19 @@ int main(int argc, char **argv)
 	memset(&serv_addr, '0', sizeof(serv_addr));
 
 	serv_addr.sin_family = AF_INET; 
-    serv_addr.sin_port = htons(atoi(argv[2])); 
+    serv_addr.sin_port = htons(host_port); 
 
-    if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) 
-    { 
-        printf("\n Socket creation error \n"); 
-        return -1; 
-    } 
+    if (host_proto == "tcp"){
+	    	sock = socket(AF_INET, SOCK_STREAM, 0);
+	    }
+	    else if(host_proto == "udp"){
+	    	sock = socket(AF_INET, SOCK_DGRAM, 0);
+	    }
+    if (sock < 0) 
+	    { 
+	        printf("\n Socket creation error \n"); 
+	        return -1; 
+	    } 
 
     // Convert IP from text to binary form 
     if(inet_pton(AF_INET, ip_out, &serv_addr.sin_addr)<=0)  
@@ -106,7 +117,7 @@ int main(int argc, char **argv)
 	    out_file.flush();
 	    printf("seq = %i, Reply received, duration time: %lf \n\n", i, duration_seconds.count());
 
-	    sleep(atoi(argv[3]));
+	    sleep(request_interval);
 
     }       
 
