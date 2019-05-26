@@ -128,8 +128,8 @@ int main(int argc, char **argv)
 		    printf("seq = %i, reply duration time: %lfs \n\n", i, duration_seconds.count());
 		    }
 		else{
-			out_file << "seq = " << i <<",           WARNING!!! server did not respond in: " << tv.tv_sec << "s WARNING!!! WARNING!!!\n\n";
-			printf("seq = %i,           WARNING!!! server did not respond in: %zus WARNING!!! WARNING!!!\n\n", i, tv.tv_sec);
+			out_file << "seq = " << i <<",            WARNING!!! server did not respond in: " << tv.tv_sec << "s WARNING!!! WARNING!!!\n\n";
+			printf("seq = %i,            WARNING!!! server did not respond in: %zus WARNING!!! WARNING!!!\n\n", i, tv.tv_sec);
 
 		}
 
