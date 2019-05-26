@@ -2,7 +2,7 @@
 // AWS checker Ver 1
 // 
 ////////////////////////////////////////////////////////
-
+Current application is using for testing connection to remote host with running TCP/UDP echo server. During execution the application sends an small request and expect to receive the same content in reply from remote host. In order to check connectivity in loop, you can define interval time (interval_seconds) between each round of request/responce. To save logs of the each round, definition of name for output file is required.
 
 
 All parameters in cli are mandatory to define!!!
@@ -12,9 +12,9 @@ Run:
       ./awschecker <host> <port> <proto> <interval_seconds> <out_file>
 
 <host> - IP address or DNS name
-<port> - TCP/UDP remote server port
-<proto> - tcp - to use TCP connection
-          udp - to use UDP connection
+<port> - remote server port
+<proto> - tcp - to use TCP protocol in connection
+          udp - to use UDP protocol in connection
 <interval_seconds> - interval between sending requests to remote server
 <out_file> - define file name to save the output logs
 
