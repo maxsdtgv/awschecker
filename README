@@ -3,7 +3,7 @@
 // 
 ////////////////////////////////////////////////////////
 Current application is using for testing connection to remote host with running TCP/UDP echo server. During execution the application sends an small request and expect to receive the same content in reply from remote host. In order to check connectivity in loop, you can define interval time (interval_seconds) between each round of request/responce. To save logs of the each round, definition of name for output file is required.
-
+Default expiration timeout to wait responce from remote server is hardcoded to 20 seconds and could be changed in source code in variable tv.tv_sec = 20; line 72.
 
 All parameters in cli are mandatory to define!!!
 
